@@ -32,6 +32,12 @@ class TradingEnv(gym.Env):
         self.start_cash = start_cash
         self.random_start = random_start
 
+        if self.prices.size <= window:
+            raise ValueError(
+                f"Not enough data: {self.prices.size} rows but window={window}. "
+                "The ticker likely has too little history spanning the train/test split."
+            )
+
         n_feat = len(FEATURE_COLS) * window + 1  # +1 position flag
         self.observation_space = spaces.Box(-10.0, 10.0, shape=(n_feat,), dtype=np.float32)
         self.action_space = spaces.Discrete(3)

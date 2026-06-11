@@ -93,6 +93,14 @@ except Exception as e:
     st.error(f"Could not load data for '{ticker}': {e}")
     st.stop()
 
+if len(train_df) <= window or len(test_df) <= window:
+    st.error(
+        f"'{ticker}' doesn't have enough history on both sides of the 2022 train/test "
+        f"split (train={len(train_df)} rows, test={len(test_df)} rows, window={window}). "
+        "Pick a ticker with a long history that trades through 2023–2024 (e.g. SPY, AAPL, MSFT)."
+    )
+    st.stop()
+
 c1, c2 = st.columns(2)
 c1.metric("Train period", f"{train_df.index.min().date()} → {train_df.index.max().date()}",
           f"{len(train_df)} days")
