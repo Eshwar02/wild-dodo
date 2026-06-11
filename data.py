@@ -6,29 +6,45 @@ select hyperparameters. Only the train period informs anything the agent sees.
 from __future__ import annotations
 
 import os
+import datetime as dt
 import numpy as np
 import pandas as pd
 
 CACHE_DIR = os.path.join(os.path.dirname(__file__), "data_cache")
 TRAIN_END = "2022-12-31"  # train: start .. TRAIN_END  |  test: TRAIN_END+1 .. end
+STALE_DAYS = 5  # re-fetch if cached data ends more than this many days ago
 
 
 def _cache_path(ticker: str) -> str:
     return os.path.join(CACHE_DIR, f"{ticker}.csv")
 
 
-def download(ticker: str = "SPY", start: str = "2010-01-01", end: str = "2024-12-31",
+def _today() -> str:
+    return dt.date.today().isoformat()
+
+
+def download(ticker: str = "SPY", start: str = "2010-01-01", end: str | None = None,
              force: bool = False) -> pd.DataFrame:
-    """Download daily OHLCV via yfinance, cache to CSV. Offline-safe after first call."""
+    """Download daily OHLCV via yfinance through `end` (default today), cache to CSV.
+
+    Auto-refreshes a stale cache so results always reflect recent data.
+    """
     os.makedirs(CACHE_DIR, exist_ok=True)
+    end = end or _today()
     path = _cache_path(ticker)
     if os.path.exists(path) and not force:
         df = pd.read_csv(path, index_col=0, parse_dates=True)
-        return df
+        last = df.index.max()
+        stale = pd.isna(last) or (pd.Timestamp(end) - last).days > STALE_DAYS
+        if not stale and len(df):
+            return df  # cache fresh enough
+
     import yfinance as yf
     df = yf.download(ticker, start=start, end=end, auto_adjust=True, progress=False)
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
+    if df.empty:
+        raise ValueError(f"yfinance returned no data for '{ticker}'. Check the symbol.")
     df = df[["Open", "High", "Low", "Close", "Volume"]].dropna()
     df.to_csv(path)
     return df
