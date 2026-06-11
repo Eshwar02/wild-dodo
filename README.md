@@ -1,5 +1,10 @@
 # AlphaLearn — RL stock trading demo
 
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+
+
 Small RL project that trains a PPO agent to buy/hold/sell a single asset (e.g. SPY) on historical daily data.
 
 Features
