@@ -1,0 +1,20 @@
+NEW PROJECT IDEAS
+
+...LONG-HORIZON AGENT RELIABILITY
+
+  The gap: Agents (Devin, Claude Code, AutoGPT descendants) catastrophically fail past ~10–20 reasoning steps. Errors  compound. No principled memory architecture exists — most agents just stuff context until it explodes.
+
+  Why unsolved: There's no "working memory" abstraction for LLMs analogous to what humans/CPUs have. RAG is too coarse;  full context is too expensive; fine-tuning forgets.
+
+  Concrete entry point: Build a benchmark for task decomposition stability — give agents the same long task 50 times,  measure variance in subgoal generation. Even the benchmark alone (without a solution) is a contribution. Or: explore  "memory consolidation" — periodic summarization triggered by attention patterns rather than token count.
+
+
+...CONTINUAL LEARNING WITHOUT CATASTROPHIC FORGETTING
+
+  The gap: Models can't learn new things over time. Every update is full retraining or PEFT (LoRA) — both fragile. A model  that ingested news daily and didn't forget yesterday's facts would be transformative; no one has it.
+
+  Why unsolved: Backprop destroys what it doesn't reinforce. EWC, replay buffers, and parameter isolation all have known  failure modes.
+
+  Concrete entry point: This is harder for an undergrad, but a measurement paper is feasible — quantify forgetting curves  under different fine-tuning regimes (LoRA vs full FT vs DPO vs continual pretraining). Surprisingly underexplored.
+
+...
